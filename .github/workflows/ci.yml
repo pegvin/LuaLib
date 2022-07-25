@@ -6,20 +6,14 @@ on:
 jobs:
   windows_x86_64:
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v2
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: true
-          install: mingw-w64-x86_64-gcc make cmake
+      - name: Check out
+        uses: actions/checkout@v2
 
       - name: Build
         run: |
-          make
+          cmake -B build
+          cmake --build build
 
   linux_x86_64:
     runs-on: ubuntu-latest
@@ -32,9 +26,11 @@ jobs:
         sudo apt-get install cmake make
 
     - name: Build
-      run: make
+      run: |
+          cmake -B build
+          cmake --build build
 
-  Success:
+  master:
     needs: [linux_x86_64, windows_x86_64]
     runs-on: ubuntu-latest
     steps:
