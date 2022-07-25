@@ -1,0 +1,42 @@
+name: nightly
+on:
+  push:
+  pull_request:
+
+jobs:
+  windows_x86_64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-gcc make cmake
+
+      - name: Build
+        run: |
+          make
+
+  linux_x86_64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+
+    - name: Install Cmake & Make
+      run: |
+        sudo apt-get install cmake make
+
+    - name: Build
+      run: make
+
+  Success:
+    needs: [linux_x86_64, windows_x86_64]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
